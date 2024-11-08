@@ -14,56 +14,24 @@ using namespace std;
 const int MAX = 2e5 + 20, MOD = 1e9 + 7;
 int t = 1;
 
-bool issub(string bin)
-{
-    string ans = "", ob = "1100";
-    DEBUG(bin);
-    for (char c : bin)
-    {
-        if (ans == "")
-            ans = c;
-        else if (ans.size() == 1)
-        {
-            if (ans[0] == '1')
-                ans = ans + c;
-            else
-                ans = c;
-        }
-        else if (ans.size() == 2)
-        {
-            if (ans[1] == '1')
-                ans = ans + c;
-            else
-                ans = c;
-        }
-        else if (ans.size() == 3)
-        {
-            if (ans[2] == '0')
-                ans = ans + c;
-            else
-                ans = c;
-        }
-        else if (ans.size() == 4)
-        {
-            if (ans == ob)
-                return true;
-            ans = c;
-        }
-    }
-    return false;
-}
-
 void solve()
 {
-    int q, p;
+    int q, p, len;
     char v;
     string bin;
     cin >> bin >> q;
-    for (int i = 0; i < q; i++)
+    len = bin.size();
+    // DEBUG(bin);
+    // DEBUG(len);
+    cin >> p >> v; // p-1
+    bin[p - 1] = v;
+    cout << (bin.find("1100") != string::npos ? "YES" : "NO") << '\n';
+    for (int i = 1; i < q; i++)
     {
         cin >> p >> v; // p-1
         bin[p - 1] = v;
-        cout << (bin.find("1100") != string::npos ? "YES" : "NO") << '\n';
+        DEBUG(bin); // I should verify that there's not a previous one present
+        cout << (bin.substr(max(0,p-4), min(8, 8-(len-p))).find("1100") != string::npos ? "YES" : "NO") << '\n';
     }
 }
 
