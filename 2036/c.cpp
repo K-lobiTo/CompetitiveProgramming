@@ -12,26 +12,39 @@ using namespace std;
 #define fst first
 #define ll long long
 const int MAX = 2e5 + 20, MOD = 1e9 + 7;
-int t = 1;
+int t = 1, len;
+string bin;
+
+
+bool there_is(int e){
+    if(e<0 || e>=len-3)return false;
+    string ans = "";ans+=bin[e];ans+=bin[e+1];ans+=bin[e+2];ans+=bin[e+3];
+    if(ans == "1100")return true;
+    return false;
+}
 
 void solve()
 {
-    int q, p, len;
+    int q, p, thereis=0;
+    bool prev, post;
     char v;
-    string bin;
     cin >> bin >> q;
     len = bin.size();
     // DEBUG(bin);
     // DEBUG(len);
-    cin >> p >> v; // p-1
-    bin[p - 1] = v;
-    cout << (bin.find("1100") != string::npos ? "YES" : "NO") << '\n';
-    for (int i = 1; i < q; i++)
+    for(int i=0;i<len;++i)if(there_is(i))thereis++;
+    // DEBUG(thereis);
+    for (int _ = 0; _ < q; ++_)
     {
         cin >> p >> v; // p-1
-        bin[p - 1] = v;
-        DEBUG(bin); // I should verify that there's not a previous one present
-        cout << (bin.substr(max(0,p-4), min(8, 8-(len-p))).find("1100") != string::npos ? "YES" : "NO") << '\n';
+        if(bin[p-1]!=v){
+            prev = there_is(p-1) || there_is(p-2)|| there_is(p-3)|| there_is(p-4);
+            bin[p - 1] = v;
+            post = there_is(p-1) || there_is(p-2)|| there_is(p-3)|| there_is(p-4);
+            thereis += post-prev;
+        }
+        
+        cout << (thereis ? "YES" : "NO") << '\n';
     }
 }
 
