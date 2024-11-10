@@ -30,10 +30,7 @@ void solve()
     char v;
     cin >> bin >> q;
     len = bin.size();
-    // DEBUG(bin);
-    // DEBUG(len);
     for(int i=0;i<len;++i)if(there_is(i))thereis++;
-    // DEBUG(thereis);
     for (int _ = 0; _ < q; ++_)
     {
         cin >> p >> v; // p-1
