@@ -15,21 +15,26 @@ using namespace std;
 const int MAX = 2e5 + 20, MOD = 1e9 + 7;
 int t = 1;
 
-void solve()
-{
+void solve(){
     int n;
-    ll x, y, tot = 0;
+    ll x, y, tot = 0, ans = 0;
     cin >> n >> x >> y;
-    int a[n], ans=0;
+    vec<int> a(n);
     for (int i = 0; i < n; ++i){
         cin >> a[i];
         tot += a[i];
     }
-    for (int i = 0; i < (n - 1); ++i){
-        for (int j = i+1; j < n; ++j){
-            ll newtot = (tot-a[i]-a[j])
-            if(newtot>=x && newtot<=y)++ans;
-        }
+    sort(ALL(a));
+    if(tot<=x || a[0]>y){
+        cout<<"0\n";
+        return;
+    }
+    auto it=a.begin();
+    for(int i = 0; n-i-1; ++i){
+        ++it;
+        auto ltx=upper_bound(it, a.end(), tot - x - a[i]);
+        auto lty=lower_bound(it, a.end(), tot - y - a[i]);
+        ans+=ltx-lty; // (a.end()-lty)-(a.end()-ltx) is ltx - lty
     }
     cout<<ans<<'\n';
 }
