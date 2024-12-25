@@ -20,22 +20,20 @@ void solve(){
     bool isS, isP, isDot, ans=true;
     isS = isP = isDot = 0;
     cin>>n;
-    char act;
+    string s;
+    cin>>s;
+    if(s[0]=='s')s[0]='.';
+    if(s[n-1]=='p')s[n-1]='.';
     for(int i = 0; i<n; ++i){
-        cin>>act;
-        if(act=='.')isDot = true;
-        else if(act=='s'){
-            // if(!isS && isDot) ans = false;
-            if(isP || (!isS && isDot))ans = false;
+        if(s[i]=='s'){
             isS = true;
         }
-        else {
+        else if(s[i]=='p'){
             isP = true;
         }
     }
-    cout<<(ans ? "Yes\n" : "No\n");
+    cout<<(isS && isP ? "NO\n" : "YES\n");
 }
-// wrong in pretest 2
   
 int main(){
 ios::sync_with_stdio(0);
