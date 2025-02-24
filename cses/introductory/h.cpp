@@ -20,12 +20,22 @@ ll gauss(ll n){
 }
 
 void solve(){
-    int n; cin>>n;
-    for(ll i =1; i<n+1; ++i){
-        cout<<gauss(i*i - 1) - 8*gauss(i-2)<<'\n';
+    int n;cin>>n;
+    if(gauss(n)%2){cout<<"NO\n";return;}
+    vec<vec<int>> ans(2);
+    int odd = (n%2);
+    for(int i = 1; i<=n/2; ++i){
+        ans.at(i%2).push_back(i);
+        ans.at(i%2).push_back(n-i+1-odd);
     }
-    
-  
+    if(odd)ans.at(0).push_back(n);
+    cout<<"YES\n";
+    cout<<ans.at(0).size()<<'\n';
+    for(auto &e: ans.at(0))cout<<e<<' ';
+    cout<<'\n';
+    cout<<ans.at(1).size()<<'\n';
+    for(auto &e: ans.at(1))cout<<e<<' ';
+    cout<<'\n';
 }
   
 int main(){

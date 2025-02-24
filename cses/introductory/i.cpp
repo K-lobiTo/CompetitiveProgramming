@@ -13,19 +13,19 @@ using namespace std;
 #define ll long long
 const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
+// ll MOD = 1000000007;
   
-ll gauss(ll n){
-    if(n<=0)return 0;
-    return (n*(n+1))/2;
+ll expoMod(ll x, ll y){
+    if(!y)return 1;
+    ll r = expoMod(x, y>>1)%MOD;
+    r = (r*r)%MOD; // r*=r; r%=MOD
+    if(y%2)r = (r*x)%MOD;
+    return r;
 }
 
 void solve(){
-    int n; cin>>n;
-    for(ll i =1; i<n+1; ++i){
-        cout<<gauss(i*i - 1) - 8*gauss(i-2)<<'\n';
-    }
-    
-  
+    int n;cin>>n;
+    cout<<expoMod(2, n)<<'\n';  
 }
   
 int main(){
