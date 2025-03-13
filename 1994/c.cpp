@@ -18,31 +18,34 @@ int t = 1;
 
 void solve()
 {
-    int n, x, ans = 0;
+    int n;
+    ll x, ans = 0;
     cin >> n >> x;
-    vec<int> a(n);
+    vec<ll> a(n);
     for (auto &e : a)
         cin >> e;
     partial_sum(ALL(a), a.begin());
-
-    for (auto &e : a)
-        DEBUG(e);
-    for (int i = 0; i < n; ++i)
+    // a.insert(a.begin(), 0);
+    // for (auto &e : a){
+    //     DEBUG(e);
+    // }
+    vec<int> dp(n+2);
+    for (int i = (n-1); i >=0; --i)
     {
-
-        int sr = a[i] + x;
-        // get right from the current element
-        int r = lower_bound(a.begin() + i, a.end(), sr) - a.begin()-1;//r+=i;
-        DEBUG(i);
-        // DEBUG(a[i]);
-        DEBUG(r);
+        ll sr = x; if(i)sr+=a[i-1];
+        int r = upper_bound(ALL(a), sr) - a.begin();
         // DEBUG(sr);
-        int rMl = r - i+1; // +1 to consider l = r
-        DEBUG(rMl);
-        DEBUG((rMl * (rMl + 1)) / 2);
-        ans += (rMl * (rMl + 1)) / 2;
+        // DEBUG(i);
+        // DEBUG(r);
+        dp[i]=dp[r+1]+r-i;
+
+        // DEBUG(dp[i]);
+        ans+=dp[i];
     }
+    // for(auto &dpi:dp)DEBUG(dpi);
+
     cout << ans << '\n';
+    // cout << accumulate(ALL(dp), 0) << '\n';
 }
 
 int main()
