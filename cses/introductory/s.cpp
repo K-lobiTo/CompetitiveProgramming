@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 #define SET(m, i) ((m) | (1ULL << (i)))
 #define TEST(m, i) ((m) & (1ULL << (i)))
 #define CLEAR(m, i) ((m) &~ (1ULL << (i)))
@@ -13,102 +13,72 @@ using namespace std;
 #define ll long long
 const int MAX = 5e5+20, MOD = 1e9+7;
 int t=1, n, arr[MAX], u, v;
-pair<vec<int>, multiset<int>> G[MAX];
-
+ 
 string s;
-
-void priMat(vec<int> mat ){
-    for(int i = 0; i<7; ++i){
-        for(int j = 0; j<7; ++j){
-            cout<<(TEST(mat[i], j)? "0":"#");
-        }
-        cout<<'\n';
-    }
-    cout<<"\n\n";
-}
-bool test(int i, int j, vec<int> mat){
-    if(i<0 || i>6 || j<0 || j>6)return false; 
+ll ans = 0;
+int mat[9];
+ 
+bool test(const int &i, const int &j){
+    // if(i<1 || i>7 || j<1 || j>7)return false; 
     if(TEST(mat[i], j))return false;
+
+    if((TEST(mat[i-1], j) && TEST(mat[i+1], j) && !(TEST(mat[i], j-1) || TEST(mat[i], j+1))))return false;
+    if((TEST(mat[i], j-1) && TEST(mat[i], j+1)) && !(TEST(mat[i-1], j) || TEST(mat[i+1], j)))return false;
     return true;
 }
+ 
+void backtrack(int idx, int i, int j){
+    if(i == 7 && j == 1){
+        if(idx == 48){
+            ans++;
+        }
+        return;
+    }
+    // if(idx==48) return; // this is impossible without getting through (0,6) [the previous if]
 
-void backtrack(ll &r, vec<int> &mat, int idx, int i, int j){
-    // DEBUG("Backtrack");
-    if(i == 6 && j == 0){r++; return; DEBUG("END");}
-    // priMat(mat);
-    if(idx==48) return;
-    if(s[idx]=='R'){
-        if(test(i, j+1, mat)){
-            mat[i]=SET(mat[i], j+1);
-            backtrack(r, mat, idx+1, i, j+1);
-            mat[i]=CLEAR(mat[i], j+1);
+    mat[i] = SET(mat[i], j);
+    if(s[idx]=='?' || s[idx]=='R'){
+        if(test(i, j+1)){
+            backtrack( idx+1, i, j+1);
         }
     }
-    else if(s[idx]=='L'){
-        if(test(i, j-1, mat)){
-            mat[i]=SET(mat[i], j-1);
-            backtrack(r, mat, idx+1, i, j-1);
-            mat[i]=CLEAR(mat[i], j-1);
+    if(s[idx]=='?' || s[idx]=='L'){
+        if(test(i, j-1)){
+            backtrack(idx+1, i, j-1);
         }
         
     }
-    else if(s[idx]=='U'){
-        if(test(i-1, j, mat)){
-            mat[i-1]=SET(mat[i-1], j);
-            backtrack(r, mat, idx+1, i-1, j);
-            mat[i-1]=CLEAR(mat[i-1], j);
+    if(s[idx]=='?' || s[idx]=='U'){
+        if(test(i-1, j)){
+            backtrack( idx+1, i-1, j);
         }
         
     }
-    else if(s[idx]=='D'){
-        if(test(i+1, j, mat)){
-            mat[i+1]=SET(mat[i+1], j);
-            backtrack(r, mat, idx+1, i+1, j);
-            mat[i+1]=CLEAR(mat[i+1], j);
+    if(s[idx]=='?' || s[idx]=='D'){
+        if(test(i+1, j)){
+            backtrack( idx+1, i+1, j);
         }
     }
-    else{
-        if(test(i, j+1, mat)){
-            mat[i]=SET(mat[i], j+1);
-            backtrack(r, mat, idx+1, i, j+1);
-            mat[i]=CLEAR(mat[i], j+1);
-        }
-        if(test(i, j-1, mat)){
-            mat[i]=SET(mat[i], j-1);
-            backtrack(r, mat, idx+1, i, j-1);
-            mat[i]=CLEAR(mat[i], j-1);
-        }
-        if(test(i-1, j, mat)){
-            mat[i-1]=SET(mat[i-1], j);
-            backtrack(r, mat, idx+1, i-1, j);
-            mat[i-1]=CLEAR(mat[i-1], j);
-        }
-        if(test(i+1, j, mat)){
-            mat[i+1]=SET(mat[i+1], j);
-            backtrack(r, mat, idx+1, i+1, j);
-            mat[i+1]=CLEAR(mat[i+1], j);
-        }
-    }
-    
+    mat[i] = CLEAR(mat[i], j);
+    return;
 }
-
-
+ 
+ 
 int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-
-    ll t=1;
-    //cin>>t;
-    int idx = 0;
-    while(t--){
-        ll resp = 0;
-        cin>>s;
-        vec<int> mat(7, 0);
-        mat[0] = SET(mat[0], 0);
-        // priMat(mat);
-        backtrack(resp, mat, 0, 0, 0);
-        cout<<resp<<'\n';
+ 
+    cin>>s;
+    for(int i = 0; i<9; ++i){
+        mat[0] = SET(mat[0], i);
+        mat[8] = SET(mat[0], i);
+        mat[i] = SET(mat[i], 8);
+        mat[i] = SET(mat[i], 0);
     }
+    
+    // vec<int> mat(7, 0);
+    backtrack( 0, 1, 1);
+    cout<<ans<<'\n';
     
     return 0;
 }
