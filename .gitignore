@@ -1,4 +1,7 @@
 
+*
+!*/
+!*.*
+!.gitignore
 *.out
 *.o
-*[!.*] # ignore all files without extension
