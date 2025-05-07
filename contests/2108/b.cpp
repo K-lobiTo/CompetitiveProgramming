@@ -22,14 +22,7 @@ void solve(){
         cout<<-1<<endl;
         return;
     }
-    ll msbit = -1;
     ll countbits = 0;
-    for(ll i = 0; i<30; ++i){
-        if(!TEST(x, i)){
-            msbit = i;
-            break;
-        }
-    }
     for(ll i = 0; i<30; ++i){
         if(TEST(x, i)){
             countbits++;
@@ -39,51 +32,18 @@ void solve(){
         cout<<x<<endl;
         return;
     }
-
-    ll sum = 0;
-
-    if(!countbits){
-        if(n%2)sum+=3+2+(n-2);
-        else {
-            sum+=n;
-        }
+    if(!((n-countbits)&1)){
+        cout<<x+n-countbits<<endl;
+        return;
     }
-
-    else{
-        for(ll i = 30; i>=0; --i){
-            if(TEST(x,i)){
-                if(countbits==1 && (n==2)){
-                    sum+=((1LL<<i)| (1LL<<msbit))+(1LL<<msbit);
-                    DEBUG("1");
-                    // DEBUG(sum);
-                    break;
-                }
-                else if(countbits==1 && (n%2)){
-                    sum+=(1LL<<i)+(n-1);
-                    // DEBUG("2");
-                    // DEBUG(sum);
-                    break;
-                }
-                else if(countbits==1 && (!(n%2))){
-                    sum+=(1LL<<i)+(0+2)+(n-2);
-                    // DEBUG("3");
-                    // DEBUG(n);
-                    break;
-                }
-                else if(countbits>1){
-                    sum+=(1LL << i);
-                    n--;
-                }
-                else {
-                    // DEBUG(n);
-                }
-
-                countbits--;
-            }         
-        }
-
+    if(x>1){
+        cout<<x+n-countbits+1<<endl;
+        return;
     }
-    cout<<sum<<endl;
+    if(x==1){cout<<n+3<<endl;return;}
+    cout<<n+3<<endl;
+    
+    
 
 }
   
