@@ -16,7 +16,15 @@ const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
   
 void solve(){
-  
+    ll k, l1, r1, l2, r2;
+    cin>>k>>l1>>r1>>l2>>r2; 
+    ll ans = 0;
+    ll kn = 1;
+    for(ll i = 0; r2/kn>=l1; ++i){
+        ans+=max(0LL, min(r2/kn, r1)-max((l2-1)/kn +1, l1) + 1ll);
+        kn*=k;
+    }
+    cout<<ans<<endl;
 }
   
 int main(){
