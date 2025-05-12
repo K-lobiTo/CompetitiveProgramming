@@ -20,37 +20,34 @@ int t=1;
 void solve(){
     int n;cin>>n;
     if(n==1){cout<<0<<endl;return;}
-    vec<vec<ll>> mat(n, vec<ll>(n));
-    int act = 4;
-    int i = 0, j = 0;
-    int st = (!(n%2))? n/2 -1 : n/2;
-    mat[st][st] = 0;
-    mat[st+1][st] = 2;
-    mat[st][st+1] = 1;
-    mat[st+1][st+1] = 3;
-    int lle = st-1, lra = min(st+2, n-1);
-    while(n>2){
-        if(act>(n*n -1))break;
-        for(int col = lra-1; col>=lle; col--){
-            mat[lle][col] = act++;
-        }
-        if(act>(n*n -1))break;
-        for(int row = lle+1; row<=lra; row++){
-            mat[row][lle] = act++;
-        }
-        if(act>(n*n -1))break;
-        for(int col = lle+1; col<=lra; col++){
-            mat[lra][col] = act++;
-        }
-        if(act>(n*n -1))break;
-        for(int row = lra-1; row>=lle; row--){
-            mat[row][lra] = act++;
-        }
-        if(act>(n*n -1))break;
-        lle--;lra++;
+    vec<vec<ll>> mat(n+2, vec<ll>(n+2, 0));
+    int act = (n*n -1);
+    for(int i = 0; i<n+2; i++){
+        mat[0][i] = 1;
+        mat[n+1][i] = 1;
     }
-    for(auto &row : mat){
-        for(auto &e : row)cout<<e<<' ';
+    for(int i = 0; i<n+2; i++){
+        mat[i][0] = 1;
+        mat[i][n+1] = 1;
+    }
+    int i = 1, j = 1;
+    vec<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+    int modDir = 0;
+    while (act>0){
+        mat[i][j] = act--;
+        if(mat[i+directions[modDir].first][j+directions[modDir].second]){
+            modDir++;
+            modDir%=4;
+        }
+        i+=directions[modDir].first;
+        j+=directions[modDir].second;
+    }
+    
+
+    for(int i = 1; i<n+1; i++){
+        for(int j = 1; j<n+1; j++){
+            cout<<mat[i][j]<<' ';
+        }
         cout<<endl;
     }
 
