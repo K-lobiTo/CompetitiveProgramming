@@ -25,69 +25,62 @@ struct UnionFind{
         if(!e) uf[Find(i)] = Find(j);
         return e;
     }
-    bool united(int i, int j) {
+    bool United(int i, int j) {
         return Find(i) == Find(j);
     }
 };
 
 int n, m; 
-bool dfs(int node, int target, vec<bool> & vis, vec<vec<int>> &mat) {
-    if(vis[node])return false;
-    vis[node] = true;
-    if(node==target)return true;
-    for(int c = 0; c<n; ++c){
-        if(dfs(mat[node][c], target, vis, mat)) return true;
-    }
-    return false;
+void bfs(int node, vec<vec<int>> &mat, UnionFind &uf, vec<bool> &withJ, vec<bool> &vis) {
+    queue<int> q;
+    q.push(node); // initial node will always have j bit set
 
+    while(!q.empty()){
+        int v = q.front(); q.pop();
+        vis[v] = true;
+        for(int i = 0; i<n; ++i){
+            if(mat[v][i] && !vis[i] && withJ[i]){
+                uf.Union(v, i);
+                q.push(i);
+            }
+        }
+    }
 }
 
   
 void solve(){
     cin>>n>>m;
     int u, v;
-    vec<int> a(n+1);
+    vec<int> a(n);
     for(int i = 0; i<n; ++i){
-       cin>>a[i+1];  
+       cin>>a[i];  
     } 
-    UnionFind ufg;
-    ufg.init(n+1);
+    vec<vec<int>> mat(n, vec<int>(n, 0));
     for(int i = 0; i<m; ++i){
        cin>>u>>v; 
-       ufg.Union(u, v);
+       mat[u-1][v-1] = 1;
+       mat[v-1][u-1] = 1;
     } 
     vec<vec<int>> ans(n, vec<int>(n));
     for(int j = 0; j<30; ++j){
-        vec<vec<int>> mat(n, vec<int>(n, 0));
-        // UnionFind uf;
-        // uf.init(n+1);
-        for(int m = 1; m<=n; ++m){
-            if(TEST(a[m], j)){ // asubm have j bit set
-                for(int i = 1; i<=n; ++i){
-                    if(TEST(a[i], j)){ // asubi too
-                        mat[i-1][m-1] = 1;
-                        mat[m-1][i-1] = 1;
-                        // uf.Union(m, i);
-                    }
-                }
+        vec<bool> withJ(n);
+        UnionFind uf;
+        uf.init(n);
+
+
+        for(int k = 0; k<n; ++k){
+            if(TEST(a[k], j))withJ[k] = 1;
+        }
+        vec<bool> vis(n);
+        for(int k = 0; k<n; ++k){
+            if(withJ[k] && !vis[k]){
+                bfs(k, mat, uf, withJ, vis);
             }
         }
-        for(int m = 1; m<=n; ++m){
-                for(int i = 1; i<=n; ++i){
-                    if((ufg.Find(m) == ufg.Find(i)) && TEST(a[i], j)){
-                        vec<bool> vis(n, 0);
-                        if(dfs(m-1, i-1, vis, mat)){
-                            if(m==8 && i==2 || m==2 && i==8){
-                                DEBUG(j);
-                                DEBUG(m);
-                                DEBUG(i);
-                            }
-                            ans[m-1][i-1] = 1;
-                            ans[i-1][m-1] = 1;
-                        }
-                }
-            }
-        }
+        for(int i = 0; i<n; ++i)
+            for(int k = 0; k<n; ++k)
+                if(uf.United(i, k))ans[i][k] = 1;
+        
     }
     for(auto &row : ans){for(auto&e: row)cout<<e;cout<<endl;}
 }
