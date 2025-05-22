@@ -18,45 +18,24 @@ int t=1;
   
 void solve(){
     ll n, m, a, b;cin>>n>>m>>a>>b;
-    ll limitL = 1;
-    ll limitU = 1;
-    ll limitD = n;
-    ll limitR = m;
-    ll ans = 0;
-    while(//((  limitD != limitU ) || (limitR!=limitL) ) &&
-     (a!=limitD || a!=limitU) || (b!=limitL || b!=limitR)){
-        ll dR = limitR-b;
-        ll dL = b - limitL;
-        ll dU = a - limitU;
-        ll dD = limitD-a;
-        ll dUD = max(dU, dD);
-        ll dRL = max(dL, dR);
-        if(dUD > dRL){
-            if(dU>dD)limitU = a;
-            else limitD = a;
+    auto subans = [&](int i, int j){
+        ll sans = 1;
+        while (i!=1) {
+            sans++;
+            i = (i+1)/2;
         }
-        else if(dUD < dRL){
-            if(dR > dL)limitR = b;
-            else limitL = b;
+        while (j!=1) {
+            sans++;
+            j = (j+1)/2;
         }
-        else {
-            if(dUD){
-                if(dU>dD)limitU = a;
-                else limitD = a;
-            }
-            else {
-                if(dR > dL)limitR = b;
-                else limitL = b;
-            }
-        }
-        b = limitL + (limitR-limitL)/2;
-        a = limitU + (limitD-limitU)/2;
-        // DEBUG(a);
-        // DEBUG(b);
+        return sans;
+    };
+    ll ans = (ll)(1e9) + 1LL;
+    ans = min(ans, subans(n, m-b+1));
+    ans = min(ans, subans(n-a+1,m));
+    ans = min(ans, subans(a, m));
+    ans = min(ans, subans(n, b));
 
-        ans++;
-
-    }
     cout<<ans<<endl;
 }
   
