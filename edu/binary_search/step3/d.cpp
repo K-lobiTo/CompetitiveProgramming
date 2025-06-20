@@ -16,45 +16,60 @@ int t=1;
 int n,m,d;
 vec<vec<ll>> mat;
 vec<bool> vis;
-int ok(ll limit, int dcount, int node){
-    if(dcount>d)return 0;
-    if(node == n-1){
-        return dcount;
-    }
-    int subAns = 0;
-    for (int i = 0; i < n; i++) {
-        if(!vis[i] && mat[node][i]!=-1 && mat[node][i]<=limit){
-            vis[i] = true;
-            subAns += ok(limit, dcount+1, i);
-            if(subAns) break;
-        }
-    }
-    return subAns;
-}
-  
-vec<int> getPath(ll limit, int size, int node){
-    vec<int> Ans;
-    if(size<0)return Ans;
-    if(node == n-1)return {n-1};
-    for (int i = 0; i < n; i++) {
-        if(!vis[i] && mat[node][i]!=-1 && mat[node][i]<=limit){
-            vis[i] = 1;
-            vec<int> sAns = getPath(limit, size-1, i);
-            vis[i] = 0;
-            if(!sAns.empty()){
-                Ans.push_back(i);
-                Ans.insert(Ans.end(), ALL(sAns));
-                break;
+
+
+int bfs(ll limit){
+    vis.assign(n, false);
+    queue<pair<int, int>> q; 
+    q.push({0,0});
+    vis[0] = 1;
+    int dcount = 0;
+    while(!q.empty()){
+        pair<int, int> node = q.front();
+        q.pop();
+        if(node.first == n-1 && node.second<=d){dcount = node.second;break;}
+        for (int i = 0; i < n; i++) {
+            if(!vis[i] && mat[node.first][i]!=-1 && mat[node.first][i]<=limit){
+                vis[i] = true;
+                q.push({i, node.second+1});
             }
         }
     }
-    return Ans;
+    return dcount;
+}
+
+vec<int> getPath(ll limit, int size){
+    vis.assign(n, false);
+    vec<int> parent(n, -1);
+    queue<pair<int, int>> q; 
+    q.push({0,0});
+    vis[0] = 1;
+    while(!q.empty()){
+        pair<int, int> node = q.front();
+        q.pop();
+        if(node.first == -1 && node.second<=(size+1)){break;}
+        for (int i = 0; i < n; i++) {
+            if(!vis[i] && mat[node.first][i] != -1 && mat[node.first][i]<=limit){
+                vis[i] = 1;
+                parent[i] = node.first;
+                q.push({i, node.second+1});
+            }
+        }
+    }
+    vec<int> path(size+1);
+    int idx = size;
+    int node = n-1;
+    while(node && node!=-1){
+        path[idx--] = node+1;
+        node = parent[node];
+    }
+    path[0] = 1;
+    return path;
 }
 
 void solve(){
     cin>>n>>m>>d;
     mat.assign(n, vec<ll>(n, -1));
-    vis.assign(n, false); vis[0] = true;
     ll a, b, c;
     for (int i = 0; i < m; i++) {
         cin>>a>>b>>c;
@@ -64,34 +79,24 @@ void solve(){
     }
     // for(auto &row:mat){for(auto &e:row)cout<<e<<' ';cout<<endl;}
     ll l = -1;
-    ll r = 1;
-    int eCount;
-    // vec<int> route;
-    while(!ok(r, 0, 0)){
-        vis.assign(n, false); vis[0] = true;
-        r*=2;
-    }
-    // DEBUG(r);
-    // for(auto &e:route)cout<<e<<' ';
-    // cout<<endl;
+    ll r = (ll)1e9+1LL;
+    int eCount = -1;
     while(l+1 < r){
         vis.assign(n, false); vis[0] = true;
         ll mid = (l+r)/2;
-        eCount = ok(mid, 0, 0);
-        if(eCount)r = mid;
+        int isOk = bfs(mid);
+        if(isOk){r = mid; eCount = isOk;}
         else l = mid;
     }
-    if(!r){
+    if(eCount==-1){
         cout<<-1<<endl;
         return;
     }
     // DEBUG(r);
     cout<<eCount<<endl;
-    vec<int> path = getPath(r, eCount, 0);
-    cout<<1<<' ';
-    for (int i = 0; i < eCount; i++) {
-       cout<<path[i]+1<<' ';
-    }
+    vis.assign(n, false); vis[0] = true;
+    vec<int> path = getPath(r, eCount);
+    for(auto &e:path)cout<<e<<' ';
     cout<<endl;
 }
   
