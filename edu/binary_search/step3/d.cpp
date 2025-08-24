@@ -14,89 +14,83 @@ using namespace std;
 const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
 int n,m,d;
-vec<vec<ll>> mat;
-vec<bool> vis;
+vec<vec<pair<int, int>>> ad;
+vec<int> ordered;
 
-
-int bfs(ll limit){
-    vis.assign(n, false);
-    queue<pair<int, int>> q; 
-    q.push({0,0});
-    vis[0] = 1;
-    int dcount = 0;
-    while(!q.empty()){
-        pair<int, int> node = q.front();
-        q.pop();
-        if(node.first == n-1 && node.second<=d){dcount = node.second;break;}
-        for (int i = 0; i < n; i++) {
-            if(!vis[i] && mat[node.first][i]!=-1 && mat[node.first][i]<=limit){
-                vis[i] = true;
-                q.push({i, node.second+1});
-            }
-        }
+std::vector<int> topologicalSort(int n, const std::vector<std::vector<int>>& adj) {
+    std::vector<int> inDegree(n, 0);
+    for (int i = 0; i < n; ++i) 
+        for (int v : adj[i]) inDegree[v]++;
+    
+    std::queue<int> q;
+    for (int i = 0; i < n; ++i) 
+        if (inDegree[i] == 0) q.push(i);
+    
+    std::vector<int> order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (int v : adj[u]) 
+            if (--inDegree[v] == 0) q.push(v);
     }
-    return dcount;
+    return order;
 }
 
-vec<int> getPath(ll limit, int size){
-    vis.assign(n, false);
-    vec<int> parent(n, -1);
-    queue<pair<int, int>> q; 
-    q.push({0,0});
-    vis[0] = 1;
-    while(!q.empty()){
-        pair<int, int> node = q.front();
-        q.pop();
-        if(node.first == -1 && node.second<=(size+1)){break;}
-        for (int i = 0; i < n; i++) {
-            if(!vis[i] && mat[node.first][i] != -1 && mat[node.first][i]<=limit){
-                vis[i] = 1;
-                parent[i] = node.first;
-                q.push({i, node.second+1});
+bool ok(int x, vec<int> &path, bool wantPath){
+    vec<pair<int, pair<int, int>>> dp(n, {1e9, pair<int, int>({-1, 1e9})});
+    dp[0].first = 0;
+    dp[0].second.second = 0;
+    for(auto &e:ordered){
+        for(auto &[a, cost]:ad[e]){
+            int maxinroute = max(cost, dp[e].first);
+            if(dp[e].second.second+1 > d)maxinroute = 1e9+1;
+            if(dp[a].first > maxinroute){
+                dp[a].first = maxinroute;
+                dp[a].second.first = e;
+                dp[a].second.second = dp[e].second.second+1;
             }
         }
     }
-    vec<int> path(size+1);
-    int idx = size;
-    int node = n-1;
-    while(node && node!=-1){
-        path[idx--] = node+1;
-        node = parent[node];
+    if(wantPath){
+        int route = n-1;
+        while(route>=0){
+            path.push_back(route+1);
+            route = dp[route].second.first;
+        }
     }
-    path[0] = 1;
-    return path;
+    return dp[n-1].first <= x;
+
 }
 
 void solve(){
     cin>>n>>m>>d;
-    mat.assign(n, vec<ll>(n, -1));
-    ll a, b, c;
+    int a, b, c;
+    ad.resize(n);
+    vec<vec<int>> toOrder(n);
     for (int i = 0; i < m; i++) {
         cin>>a>>b>>c;
-        a--;b--;
-        mat[a][b] = c;
-        mat[b][a] = c;
+        ad[a-1].push_back({b-1, c});
+        toOrder[a-1].push_back(b-1);
     }
-    // for(auto &row:mat){for(auto &e:row)cout<<e<<' ';cout<<endl;}
-    ll l = -1;
-    ll r = (ll)1e9+1LL;
-    int eCount = -1;
+
+    ordered = topologicalSort(n, toOrder);
+    
+
+    vec<int> path;
+    int l = -1;
+    int r = 1e9; // kept ok
     while(l+1 < r){
-        vis.assign(n, false); vis[0] = true;
-        ll mid = (l+r)/2;
-        int isOk = bfs(mid);
-        if(isOk){r = mid; eCount = isOk;}
+        int mid = (l+r)/2;
+        if(ok(mid, path, 0))r = mid;
         else l = mid;
     }
-    if(eCount==-1){
-        cout<<-1<<endl;
-        return;
-    }
     // DEBUG(r);
-    cout<<eCount<<endl;
-    vis.assign(n, false); vis[0] = true;
-    vec<int> path = getPath(r, eCount);
-    for(auto &e:path)cout<<e<<' ';
+    ok(r, path, 1);
+    if(path.size()<2){cout<<-1<<endl; return;}
+    cout<<path.size()-1<<endl;
+    for (int i = path.size() - 1; i >= 0; i--) {
+        cout<<path[i]<<" ";
+    }
     cout<<endl;
 }
   
