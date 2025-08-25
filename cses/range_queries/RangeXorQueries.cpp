@@ -15,13 +15,11 @@ const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
 
 struct Mono {
-    // TODO
     ll value;
-    Mono(ll v = (1e10)-1LL) : value(v) {}
+    Mono(ll v = (1LL<<33) -1LL) : value(v) {}
 };
 
 Mono operator+(Mono a, Mono b) {
-    // TODO
     return {a.value ^ b.value};
 }
 
@@ -40,7 +38,7 @@ struct Tree {
   }
 
   Mono get(int l, int r) {
-    Mono resl((1e10)-1LL), resr((1e10)-1LL); // neutral values should be set : resl(0LL), resr(OLL)
+    Mono resl, resr;
     for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
       if (l&1) resl = resl + s[l++];
       if (r&1) resr = s[--r] + resr;
