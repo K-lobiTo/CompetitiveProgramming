@@ -16,40 +16,31 @@ const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
 
 
-ll getNum(int x, int y, int n){
+ll getNum(ll x, ll y, ll n){
     ll ans = 0;
     while (n) {
         if(x> 1LL<<(n-1) && y>1LL<<(n-1)){
-            ans+= 1LL<<(2*n-2);
-            // DEBUG("a");
+            ans+= 1LL<<(2LL*n-2LL);
             x-=1LL<<(n-1);
             y-=1LL<<(n-1);
         }
         else if(x<= 1LL<<(n-1) && y<= 1LL<<(n-1)){
-            // DEBUG("b");
         }
         else if(y> 1LL<<(n-1) && x <= 1LL<<(n-1)){
-            ans+=3 * 1LL<<(2*n-2);
-            // DEBUG("c");
+            ans+=3 * 1LL<<(2LL*n-2LL);
             y-=1<<(n-1);
         }
         else if(x>1LL<<(n-1) && y<=1LL<<(n-1)){
-            ans+=1LL<<(2*n-1);
-            // DEBUG("d");
+            ans+=1LL<<(2LL*n-1LL);
             x-=1LL<<(n-1);
         }
-        // else { DEBUG("what?");
-        //     DEBUG(x);
-        //     DEBUG(y);
-        //     DEBUG(n);
-        // }
         n--;
     }
     return ans;
 }
 
-pair<int, int> getCords(ll d, int n){
-    int x = 0, y = 0;
+pair<ll, ll> getCords(ll d, ll n){
+    ll x = 0, y = 0;
     while(n){
         //x,y >
         if(d> 1LL<<(2*n-2) && d<= 1LL<<(2*n-1)){
@@ -74,19 +65,19 @@ pair<int, int> getCords(ll d, int n){
 }
   
 void solve(){
-    int n, q; cin>>n>>q;
+    ll n, q; cin>>n>>q;
     string s;
     for (int i = 0; i < q; i++) {
         cin>>s;
         if (s[0]=='-') {
-            int x, y;
+            ll x, y;
             cin>>x>>y;
-            cout<<getNum(x, y, n)+1<<endl;
+            cout<<getNum(x, y, n)+1LL<<endl;
         }
         else {
             ll d; cin>>d;
-            pair<int, int> cords = getCords(d, n);
-            cout<<cords.first+1<<' '<<cords.second+1<<endl;
+            pair<ll, ll> cords = getCords(d, n);
+            cout<<cords.first+1LL<<' '<<cords.second+1LL<<endl;
         }
     }
 }
