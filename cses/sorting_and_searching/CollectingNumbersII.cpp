@@ -17,38 +17,56 @@ int t=1;
   
 void solve(){
     int n, m; cin>>n>>m;
-    vec<pair<int, int>> x(n);
-    vec<int> oIdxs(n);
+    vec<int> reversion(n);
+    vec<int> idx(n);
+    int inp;
     for (int i = 0; i < n; i++) {
-        x[i] = {0, i+1};
-        cin>>x[i].first;
-        oIdxs[i] = x[i].first-1;
+        cin>>inp; inp--;
+        reversion[inp] = i;
+        idx[i] = inp;
     }
-    sort(ALL(x));
 
     int ans = 1;
-    int idx = x[0].second;
-    for (int i = 1; i < n; i++) {
-        if(x[i].second < idx){
+    for (int i = 0; i < n-1; i++) {
+        if(reversion[i]>reversion[i+1]){
             ans++;
         }
-        idx = x[i].second;
     }
-    cout<<ans<<endl;
-    cout<<endl;
+    auto ok = [&](int i) -> bool{
+        return i>=0 && i<n;
+    };
 
-    // I was thinking about using a map
-    // but it would take O(n) each query anyway
+    // DEBUG(ans);
+
     int a, b;
-    for (int i = 0; i < m; i++) {
+    while(m--) {
         cin>>a>>b; a--; b--;
-        int mini = min(a, b);
-        int maxi = max(a, b);
-        if(oIdxs[mini]<oIdxs[maxi])ans++;
-        else ans--;
+        int is = idx[a];
+        int ib = idx[b];
+        int mini = min(is, ib);
+        int maxi = max(is, ib);
+        set<pair<int, int>> ap;
+        ap.insert({mini, maxi});
+        if (ok(is-1)) ap.insert({is-1,is});
+        if (ok(is+1)) ap.insert({is, is+1});
+        if (ok(ib-1)) ap.insert({ib-1, ib});
+        if (ok(ib+1)) ap.insert({ib, ib+1});
+
+        for(auto &[f, s]:ap){
+            if(f+1 == s && reversion[f] > reversion[s])ans--;
+        }
+
+        swap(idx[a], idx[b]);
+        reversion[is] = b;
+        reversion[ib] = a;
+
+        for(auto &[f, s]:ap){
+            if(f+1 == s && reversion[f] > reversion[s])ans++;
+        }
+
         cout<<ans<<endl;
-        swap(oIdxs[mini], oIdxs[maxi]);
     }
+
 }
   
 int32_t main(){
