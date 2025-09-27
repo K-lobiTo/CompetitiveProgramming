@@ -19,7 +19,7 @@ ll tp(int msize, int mdiff){
     ll ans = 0;
     int ml = 0;
     int subans = 0;
-    unordered_map<int, int> inseg;
+    map<int, int> inseg;
     for (int i = 0; i < n; i++) {
         inseg[a[i]]++;
         if(inseg[a[i]] == 1)subans++;
