@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <bitset>
 using namespace std;
   
 #define SET(m, i) ((m) | (1ULL << (i)))
@@ -13,51 +14,97 @@ using namespace std;
 #define ll long long
 const int MAX = 2e5+20, MOD = 1e9+7;
 int t=1;
+
+struct ds {
+    vec<ll> values;
+    vec<bitset<1001>> sums; 
+    
+    ds(){
+        sums.push_back(bitset<1001>());
+        sums.back()[0] = 1;
+    }
+
+    ll pop(){
+        ll top = values.back();
+        sums.pop_back();
+        values.pop_back();
+        return top;
+    }
+
+    void push(ll v){
+        values.push_back(v);
+        sums.push_back(sums.back() | sums.back()<<v);
+    }
+
+    bool empty(){
+        return values.empty();
+    }
+
+    bitset<1001> getSums(){
+        return sums.back();
+    }
+};
+
+struct segment{
+    ds s1, s2;
+
+    void transfer(){
+        while(!s1.empty()){
+            s2.push(s1.pop());
+        }
+    }
+
+    void add(ll v){
+        s1.push(v);
+    }
+
+    void erase(){
+        if(s2.empty()) transfer();
+        s2.pop();
+    }
+
+    bool good(int s){
+        // bitset<1001> both;
+        // for (int i = 0; i < s+1; i++) {
+        //     if(s1.sums.back()[i]) both |= s2.sums.back()<<i;
+        //     if(both[s])return 1;
+        // }
+        for (int i = 0; i < s+1; i++) {
+            if(s1.sums.back()[i]){
+                if(s2.sums.back()[s-i])return 1;
+            }
+        }
+        return 0;
+    }
+
+    void debugboth(int s){
+        bitset<1001> both;
+        for (int i = 0; i < s+1; i++) {
+            if(s1.sums.back()[i]) both |= s2.sums.back()<<i;
+        }
+        for (int i = 0; i < s+1; i++) {
+            cout<<both[i];
+        }
+        cout<<endl;
+    }
+};
+
   
 void solve(){
     int n, s; cin>>n>>s;
     vec<int> a(n); rAuto(a);
-    set<int> cSums;
-    set<int> lSums;
-    vec<int> cSumsC(s+1);
-    int minlen = n+1;
+    int ans = n+1;
     int l = 0;
+    segment inseg;
     for (int r = 0; r < n; r++) {
-        vec<int> cur;
-        for(auto &e:cSums){
-            if(e + a[r] <= s){
-                cur.push_back(e+a[r]);
-                cSumsC[e+a[r]]++;
-            }
-        }
-        if(a[r] <= s){
-            cur.push_back(a[r]);
-            cSumsC[a[r]]++;
-        }
-        for(auto &e:cur)cSums.insert(e);
-        cur.clear();
-        while(cSums.find(s)!=cSums.end()){
-            // reversion is wrong
-            minlen = min(minlen, r-l +1);
-            vec<int> toErase;
-            for(auto &e:lSums){
-                if(e + a[l] <= s){
-                    cur.push_back(e+a[l]);
-                    --cSumsC[e+a[l]];
-                    if(!cSumsC[e+a[l]])toErase.push_back(e+a[l]);
-                }
-            }
-            if(a[l] <= s){
-                cur.push_back(a[l]);
-                    --cSumsC[a[l]];
-                if(!cSumsC[a[l]])toErase.push_back(a[l]);
-            }
-            for(auto &e:toErase)cSums.erase(e);
-            for(auto &e:cur)lSums.insert(e);
+        inseg.add(a[r]);
+        while(inseg.good(s)){
+            ans = min(ans, r-l+1);
+            inseg.erase();
             l++;
         }
     }
-    cout<<(minlen == n+1 ? -1 : minlen)<<endl;
+    cout<<(ans==n+1?-1:ans)<<endl;
 }
   
 int32_t main(){
