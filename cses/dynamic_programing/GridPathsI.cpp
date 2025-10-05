@@ -19,44 +19,20 @@ void solve(){
     int n; cin>>n;
     vec<string> mat(n);
     rAuto(mat);
-    vec<vec<ll>> dp(n, vec<ll>(n, 0));
-    vec<vec<bool>> vis(n, vec<bool>(n));
+    vec<vec<ll>> dp(n+1, vec<ll>(n+1, 0));
     auto ok = [&](int i, int j) -> bool{
-        return i<n && j<n && mat[i][j]!='*';
+        return mat[i-1][j-1]!='*';
     };
-    queue<pair<int, int>> q;
-    if(ok(0, 0)){
-        q.push({0, 0});
-        dp[0][0] = 1;
-        vis[0][0] = 1;
-    }
-    while(!q.empty()){
-        auto &[x, y] = q.front();
-        q.pop();
-        if(ok(x+1, y)){
-            dp[x+1][y]+=dp[x][y];
-            dp[x+1][y]%=MOD;
-            if(!vis[x+1][y]){
-                q.push({x+1, y});
-                vis[x+1][y]=1;
+    dp[1][1] = ok(1, 1);
+    for (int i = 1; i < n+1; i++) {
+        for (int j = 1; j < n+1; j++) {
+            if(ok(i, j)){
+                dp[i][j] += dp[i-1][j] + dp[i][j-1];
+                dp[i][j]%=MOD;
             }
         }
-        if(ok(x, y+1)){
-            dp[x][y+1]+=dp[x][y];
-            dp[x][y+1]%=MOD;
-            if(!vis[x][y+1]){
-                q.push({x, y+1});
-                vis[x][y+1]=1;
-            };
-        }
     }
-    // for (int i = 0; i < n; i++) {
-    //     for (int j = 0; j < n; j++) {
-    //         cout<<dp[i][j]<<' ';
-    //     }
-    //     cout<<endl;
-    // }
-    cout<<dp[n-1][n-1]<<endl;
+    cout<<dp[n][n]<<endl;
 }
   
 int32_t main(){
