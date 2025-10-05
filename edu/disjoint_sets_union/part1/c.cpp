@@ -18,11 +18,12 @@ struct UnionFind {
     vector<int> uf;
     vector<int> rk;
     vector<int> xp;
-    vector<int> relXp;
+    vector<int> offset;
+
     void init(int n) { 
         uf.resize(n); rk.assign(n, 0);
         xp.assign(n, 0);
-        relXp.assign(n, 0);
+        offset.assign(n, 0);
         for (int i = 0; i < n; i++) {
             uf[i] = i;
         }
@@ -32,29 +33,31 @@ struct UnionFind {
 
     int Find(int i) { 
         if(uf[i] != i){
-            int root = Find(uf[i]);
-            relXp[i] += relXp[uf[i]];
-            uf[i] = root;
+            int p = uf[i];
+            uf[i] = Find(p);
+            offset[i] += offset[p];
         }
         return uf[i]; 
     }
     bool United(int i, int j) { return Find(i) == Find(j); }
+    
     bool Union(int i, int j) {
         i = Find(i); j = Find(j);
         if (i == j) return 0;
         if (rk[i] < rk[j]) swap(i, j);
         uf[j] = i;
-        relXp[j] -= relXp[i];
+        offset[j] = xp[j] - xp[i];
         if (rk[i] == rk[j]) rk[i]++;
         return 1;
     }
     void add(int i, int v){
         i = Find(i);
-        relXp[i] += v;
+        xp[i] += v;
     }
     int get(int i){
-        Find(i);
-        return relXp[i];
+        int root = Find(i);
+        return xp[root] + offset[i];
+
     }
 };
   
