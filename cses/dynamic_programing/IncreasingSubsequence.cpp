@@ -18,7 +18,7 @@ struct Mono {
 };
 
 Mono operator+(Mono a, Mono b) {
-    return {a.value + b.value};
+    return {max(a.value , b.value)};
 }
 
 struct SegmentTree {
@@ -93,23 +93,19 @@ void solve(){
             indx++;
         }
     }
-    DEBUG(indx);
 
     SegmentTree segTree(indx+1);
 
     vec<int> subans(indx+1);
-    for(const int &e:input){
-        int i = indexation[e];
-        DEBUG(e);
-        DEBUG(i);
-        subans[i] = segTree.get(0, i+1).value + 1;
-        DEBUG(subans[i]);
+    for(int e = n-1; e>= 0; e--){
+        int i = indexation[input[e]];
+        subans[i] = max(1LL, segTree.get(i+1, indx+1).value + 1);
         segTree.set(i, Mono(subans[i]));
     }
 
-    for (int i = 0; i < indx+1; i++) {
-        cout<<i<<" "<<subans[i]<<endl;
-    }
+    // for (int i = 0; i < indx+1; i++) {
+    //     cout<<i<<" "<<subans[i]<<endl;
+    // }
     int ans = *max_element(ALL(subans));
     cout<<ans<<endl;
 }
