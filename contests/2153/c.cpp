@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <bits/stdc++.h>
 using namespace std;
   
@@ -10,13 +11,13 @@ int t=1;
   
 void solve(){
     int n; cin>>n;
-    map<int, int> a;
+    map<ll, int> a;
     for (int i = 0; i < n; i++) {
         int input; cin>>input;
         a[input]++;
     }
-    vec<int> pairs;
-    vec<int> single;
+    vec<ll> pairs;
+    vec<ll> single;
     for(auto &[v, cant]:a){
         if(cant&1){
             single.push_back(v);
@@ -26,25 +27,21 @@ void solve(){
         }
     }
 
-    int bstsingle = 0;
     ll ans = accumulate(pairs.begin(), pairs.end(), 0LL);
-    auto it = ranges::lower_bound(single, ans);
-    if(it != single.begin()){
-        it--;
-        bstsingle = *it;
-        ans+=bstsingle;
-        single.erase(it);
+    ll mx = 0;
+    assert(ranges::is_sorted(single));
+    for (int i = 1; i < single.size(); i++) {
+        if(single[i] - single[i-1] < ans)mx = max(mx, single[i] + single[i-1]);
     }
-    it = ranges::lower_bound(single, ans);
-    if(it != single.begin()){
-        it--;
-        bstsingle = *it;
-        ans+=bstsingle;
-        single.erase(it);
+    if(!mx){
+        auto it = ranges::lower_bound(single, ans);
+        if(it != single.begin()){
+            mx = *prev(it);
+        }
     }
-    
+    ans+=mx;
 
-    if(pairs.size() == 2 && !bstsingle) return void(cout<<0<<endl);
+    if(pairs.size() == 2 && !mx) return void(cout<<0<<endl);
     cout<<ans<<endl;
 
 
