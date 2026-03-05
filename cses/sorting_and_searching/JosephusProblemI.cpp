@@ -24,7 +24,7 @@ void joseph(vec<int> &c){
 void solve(){
     int n; cin>>n;
     vec<int> c(n);
-    ranges::iota(c, 1);
+    iota(c.begin(), c.end(), 1);
     joseph(c);
 }
   
