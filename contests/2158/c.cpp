@@ -15,14 +15,14 @@ void solve(){
     for(auto &e:a)cin>>e;
     for(auto &e:b)cin>>e;
     k&=1;
-    vec<int> accL(n), accR(n);
+    vec<ll> accL(n), accR(n);
     for (int i = 0; i < n; i++) {
         accL[i] = (i && accL[i-1] > 0 ? accL[i-1] : 0LL) + a[i];
     }
     for (int i = n - 1; i >= 0; i--) {
         accR[i] = (i+1 < n && accR[i+1] > 0 ? accR[i+1] : 0LL) + a[i];
     }
-    if(!k)return void(cout<<*ranges::max_element(accR)<<endl);
+    if(!k)return void(cout<<*ranges::max_element(accL)<<endl);
     ll ans = LONG_MIN;
     for (int i = 0; i < n; i++) {
         ans = max(ans, accL[i] + accR[i] - a[i] + b[i]);
