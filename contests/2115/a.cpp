@@ -5,72 +5,48 @@ using namespace std;
 #define vec vector
 #define ll long long
 
-const int MAX = 2e5+20, MOD = 1e9+7;
+const int MAX = 2e5+20, MOD = 1e9+7, MXN = 5e3+5;
 int t=1;
+
+vec<vec<int>> g(MXN, vec<int>(MXN));
+
+void fillG(){
+    for (int i = 0; i < MXN; i++) {
+        g[0][i] = g[i][0] = g[i][i] = i;
+    }
+    for (int i = 1; i < MXN; i++) {
+        for (int j = 1; j < i; j++) {
+            g[i][j] = g[j][i] = g[j][i%j];
+        }
+    }
+}
   
 void solve(){
     int n; cin>>n;
-    vec<int> arr(n);
-    multiset<int> a;
-    for(auto &e:arr){
+    int k = 0, mx = 0;
+    vec<int> a(n);
+    for(auto &e:a){
         cin>>e;
-        a.insert(e);
+        k = g[k][e];
     }
-    int minval = *a.begin();
-    bool opt2 = 1;
-    for (int i = 0; i < n; i++) {
-        if(gcd(minval, arr[i])!=minval){
-            opt2 = 0; break;
+    for(auto &e:a)e/=k, mx = max(mx, e);
+    vec<int> dp(mx+1, 1e9);
+    for(auto &e:a)dp[e] = 0;
+    for (int i = mx; i >= 1; i--) {
+        for(auto &e:a){
+            dp[g[i][e]] = min(dp[g[i][e]], dp[i] + 1);
         }
     }
-    int ansp = 1e9;
-    if(opt2){
-        ansp = min(ansp, n-(int)a.count(minval));
-        return void(cout<<ansp<<endl);
-    }
-        
-    int mn = 1e9;
-    int mnidx = -1;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int cur = gcd(arr[i], arr[j]);
-            if(a.contains(cur))continue;
-            if(cur < mn){
-                if(arr[i] != cur)mnidx = i;
-                else if(arr[j] !=cur) mnidx = j;
-                else continue;
-                mn = cur;
-            }
-        }
-    }
-
-    int ans = 0;
-    if(mnidx != -1){
-        a.erase(a.find(arr[mnidx]));
-        a.insert(mn);
-        // DEBUG(mn);
-        ans++;
-    }
-
-    // DEBUG(a.count(*a.begin()));
-    // for(auto &e:a)cout<<e<<" ";
-    // cout<<endl;
-    while(!(a.count(*a.begin())==n)){
-        int f = *a.begin();
-        auto itl = prev(a.end());
-        int l = *itl;
-        a.erase(itl);
-        a.insert(gcd(f, l));
-
-        ans++;
-    }
-
-    // DEBUG(mnidx);
-    cout<<min(ans, ansp)<<endl;
+    int ans = max(dp[1]-1, 0);
+    for(auto &e:a)if(e>1)ans++;
+    cout<<ans<<endl;
+    
+    
 }
   
 int32_t main(){
     ios::sync_with_stdio(0), cin.tie(0); 
+    fillG();
 
     cin>>t;
     while(t--){
